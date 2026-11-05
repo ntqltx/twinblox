@@ -12,7 +12,7 @@ import (
 	"github.com/ntqltx/twinblox/internal/syncbreaker"
 )
 
-const BINARY_PATH = "Contents/MacOS/RobloxPlayer"
+const BINARY_PATH string = "Contents/MacOS/RobloxPlayer"
 
 var ErrNotInstalled = errors.New("Roblox.app not found in ~/Applications")
 

@@ -2,10 +2,7 @@ module github.com/ntqltx/twinblox
 
 go 1.23
 
-require (
-	github.com/ncruces/zenity v0.10.13
-	github.com/progrium/darwinkit v0.5.1-0.20240715194340-61b9e31a12fa
-)
+require github.com/ncruces/zenity v0.10.13
 
 require (
 	github.com/akavel/rsrc v0.10.2 // indirect
