@@ -3,7 +3,7 @@ package robloxapp
 import (
 	"os"
 
-	"github.com/Insadem/multi-roblox-macos/pkg/ps"
+	"github.com/ntqltx/twinblox/pkg/ps"
 )
 
 func CloseAll() {

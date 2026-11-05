@@ -3,7 +3,7 @@ package fspath
 import (
 	"os"
 
-	"github.com/Insadem/multi-roblox-macos/pkg/fspath/shortenpath"
+	"github.com/ntqltx/twinblox/pkg/fspath/shortenpath"
 )
 
 // findLibDir returns path to lib dir or empty string.

@@ -3,7 +3,7 @@ package macosapp
 import (
 	"os/exec"
 
-	"github.com/Insadem/multi-roblox-macos/internal/robloxapp"
+	"github.com/ntqltx/twinblox/internal/robloxapp"
 	"github.com/progrium/darwinkit/helper/action"
 	"github.com/progrium/darwinkit/helper/layout"
 	"github.com/progrium/darwinkit/macos"
@@ -12,6 +12,7 @@ import (
 	"github.com/progrium/darwinkit/objc"
 )
 
+// todo remove that :sob:
 func Run(clean func()) {
 	macos.RunApp(func(app appkit.Application, delegate *appkit.ApplicationDelegate) {
 		app.SetActivationPolicy(appkit.ApplicationActivationPolicyRegular)

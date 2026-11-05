@@ -1,4 +1,4 @@
-module github.com/Insadem/multi-roblox-macos
+module github.com/ntqltx/twinblox
 
 go 1.23
 

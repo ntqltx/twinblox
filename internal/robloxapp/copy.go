@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Insadem/multi-roblox-macos/pkg/fspath"
+	"github.com/ntqltx/twinblox/pkg/fspath"
 )
 
 type Copy struct {
