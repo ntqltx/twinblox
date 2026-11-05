@@ -1,55 +1,70 @@
 package macosapp
 
+/*
+#cgo CFLAGS: -x objective-c -fobjc-arc
+#cgo LDFLAGS: -framework Cocoa
+#include "app.h"
+*/
+import "C"
+
 import (
 	"os/exec"
+	"runtime"
+	"strconv"
+	"strings"
 
-	"github.com/ntqltx/twinblox/internal/robloxapp"
-	"github.com/progrium/darwinkit/helper/action"
-	"github.com/progrium/darwinkit/helper/layout"
-	"github.com/progrium/darwinkit/macos"
-	"github.com/progrium/darwinkit/macos/appkit"
-	"github.com/progrium/darwinkit/macos/foundation"
-	"github.com/progrium/darwinkit/objc"
+	"github.com/ntqltx/twinblox/internal/instances"
 )
 
-// todo remove that :sob:
-func Run(clean func()) {
-	macos.RunApp(func(app appkit.Application, delegate *appkit.ApplicationDelegate) {
-		app.SetActivationPolicy(appkit.ApplicationActivationPolicyRegular)
-		app.ActivateIgnoringOtherApps(true)
+var onOpenURL func(string)
+var onQuit func()
 
-		w := appkit.NewWindowWithContentRectStyleMaskBackingDefer(foundation.Rect{Size: foundation.Size{Width: 32, Height: 32}},
-			appkit.ClosableWindowMask|appkit.TitledWindowMask|appkit.MiniaturizableWindowMask,
-			appkit.BackingStoreBuffered, false)
-		objc.Retain(&w)
+func init() {
+	runtime.LockOSThread()
+}
 
-		lable := appkit.NewLabel("start any roblox game via browser")
-		dButton := appkit.NewButtonWithTitle("join discord server")
-		cButton := appkit.NewButtonWithTitle("close all instances")
+func Run(openURL func(url string), quit func()) {
+	onOpenURL = openURL
+	onQuit = quit
 
-		action.Set(dButton, func(sender objc.Object) {
-			exec.Command("open", "https://discord.gg/AwNAa7utbY").Run()
-		})
-		action.Set(cButton, func(sender objc.Object) {
-			robloxapp.CloseAll()
-		})
+	C.RunApp()
+}
 
-		stackView := appkit.StackView_StackViewWithViews([]appkit.IView{lable, dButton, cButton})
-		stackView.SetOrientation(appkit.UserInterfaceLayoutOrientationVertical)
-		stackView.SetDistribution(appkit.StackViewDistributionFillEqually)
-		stackView.SetAlignment(appkit.LayoutAttributeCenterX)
-		stackView.SetSpacing(10)
+func isTrayProcess(pid int) bool {
+	out, err := exec.Command("ps", "-o", "args=", "-p", strconv.Itoa(pid)).Output()
+	if err != nil {
+		return false
+	}
+	return strings.Contains(string(out), "-launchToTray")
+}
 
-		w.ContentView().AddSubview(stackView)
-		layout.PinEdgesToSuperView(stackView, foundation.EdgeInsets{Top: 10, Bottom: 10, Left: 20, Right: 20})
+//export goIsTrayProcess
+func goIsTrayProcess(pid C.int) C.bool {
+	return C.bool(isTrayProcess(int(pid)))
+}
 
-		w.Center()
-		w.SetTitle("multi-roblox-macos")
-		w.MakeKeyAndOrderFront(nil)
+//export goInstanceLabel
+func goInstanceLabel(pid C.int) *C.char {
+	list, err := instances.List()
+	if err != nil {
+		return nil
+	}
 
-		delegate.SetApplicationShouldTerminateAfterLastWindowClosed(func(appkit.Application) bool {
-			clean()
-			return true
-		})
-	})
+	for _, in := range list {
+		if in.PID == int(pid) {
+			return C.CString(in.Name)
+		}
+	}
+
+	return nil
+}
+
+//export goOpenURL
+func goOpenURL(url *C.char) {
+	onOpenURL(C.GoString(url))
+}
+
+//export goQuit
+func goQuit() {
+	onQuit()
 }

@@ -16,6 +16,11 @@ const BUNDLE_IDENTIFIER string = "com.ntqltx.twinblox"
 var schemes = []string{"roblox-player", "roblox"}
 
 func main() {
+	if _, err := robloxapp.AppPath(); err != nil {
+		macosapp.Notification(err.Error())
+		return
+	}
+
 	// twinblox opens roblox links instead of roblox application
 	for _, s := range schemes {
 		if !urlhandler.Set(BUNDLE_IDENTIFIER, s) || !urlhandler.Check(BUNDLE_IDENTIFIER, s) {
