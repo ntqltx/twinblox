@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strconv"
 
 	"github.com/ntqltx/twinblox/internal/appdir"
+	"github.com/ntqltx/twinblox/internal/keychain"
 )
 
 // account struct that can get callers
@@ -29,6 +31,15 @@ func List() ([]Account, error) {
 		list = []Account{}
 	}
 	return list, err
+}
+
+func Save(acc Account) {
+	// todo
+}
+
+// gets an account cookie SAFELY !!! using macos keychain
+func Cookie(acc Account) ([]byte, error) {
+	return keychain.Get(keychainKey(acc.UserId))
 }
 
 // returns saved account from the list under given name
@@ -58,4 +69,8 @@ func load(dir string) ([]Account, error) {
 
 func path(dir string) string {
 	return filepath.Join(dir, "accounts.json")
+}
+
+func keychainKey(userId int64) string {
+	return "roblosecurity:" + strconv.FormatInt(userId, 10)
 }
