@@ -2,6 +2,7 @@ set quiet
 
 app := "Twinblox.app"
 binary := app / "Contents/MacOS/twinblox"
+identity := env("TWINBLOX_SIGN_IDENTITY", "Twinblox Signing")
 
 alias b := build
 alias r := run
@@ -15,9 +16,19 @@ check:
 
 build: check
     go build -o {{binary}} .
-    codesign --force -s - {{app}}
+    just sign
     touch {{app}}
     echo "built {{app}}"
+
+sign:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if security find-identity -p codesigning | grep -q "{{identity}}"; then
+        codesign --force -s "{{identity}}" {{app}}
+    else
+        echo "no '{{identity}}' certificate, signing ad-hoc"
+        codesign --force -s - {{app}}
+    fi
 
 run: build
     -pkill -x twinblox
